@@ -1,0 +1,1 @@
+{"version":3,"file":"todoItem.provider.js","sourceRoot":"","sources":["../../src/providers/todoItem.provider.ts"],"names":[],"mappings":";;;AACA,yDAAsD;AACtD,iEAAwD;AAE3C,QAAA,gBAAgB,GAAe;IAC1C;QACE,OAAO,EAAE,qBAAqB;QAC9B,UAAU,EAAE,CAAC,YAA2B,EAAE,EAAE;YAC1C,0BAAQ,CAAC,YAAY,GAAG,YAAY,CAAC;YACrC,OAAO,0BAAQ,CAAC;QAClB,CAAC;QACD,MAAM,EAAE,CAAC,6BAAa,CAAC;KACxB;CACF,CAAC"}
