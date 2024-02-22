@@ -63,6 +63,7 @@ let NotificationService = class NotificationService {
             existNotification.provider = provider;
             existNotification.schedule = schedule;
             existNotification.sentAt = null;
+            notification.active = active;
             await existNotification.save();
             return;
         }
@@ -76,8 +77,8 @@ let NotificationService = class NotificationService {
         notification.active = active;
         await notification.save();
     }
-    async deleteNotification(tmodel) {
-        const { id: taskId } = tmodel;
+    async deleteNotification(model) {
+        const { id: taskId } = model;
         await this.notificationRepository.destroy({ where: { taskId } });
     }
     async sendNotificationToUsers() {
