@@ -18,10 +18,11 @@ const event_emitter_1 = require("@nestjs/event-emitter");
 const schedule_1 = require("@nestjs/schedule");
 const notification_entity_1 = require("../entities/notification.entity");
 const todoItem_entity_1 = require("../entities/todoItem.entity");
+const NotificationsProviders_factory_1 = require("../providers/NotificationsProviders.factory");
 const scheduleParser_provider_1 = require("../providers/scheduleParser.provider");
 let NotificationService = class NotificationService {
-    constructor(notificationProvider, notificationRepository, deviceRepository, scheduleNotificationParser) {
-        this.notificationProvider = notificationProvider;
+    constructor(notificationProviderFactory, notificationRepository, deviceRepository, scheduleNotificationParser) {
+        this.notificationProviderFactory = notificationProviderFactory;
         this.notificationRepository = notificationRepository;
         this.deviceRepository = deviceRepository;
         this.scheduleNotificationParser = scheduleNotificationParser;
@@ -31,51 +32,42 @@ let NotificationService = class NotificationService {
         if (!modelNotification) {
             return;
         }
-        const { provider, schedule, active } = modelNotification;
+        const { providers, schedule, active } = modelNotification;
         const title = 'Reminder: ';
         const body = description;
-        const existNotification = await this.notificationRepository.findOne({ where: { taskId } });
-        if (existNotification) {
-            return;
+        await this.notificationRepository.destroy({ where: { taskId } });
+        for (const provider of providers) {
+            const notification = new notification_entity_1.Notification();
+            notification.title = title;
+            notification.body = body;
+            notification.provider = provider;
+            notification.schedule = schedule;
+            notification.active = active;
+            notification.userId = userId;
+            notification.taskId = taskId;
+            await notification.save();
         }
-        const notification = new notification_entity_1.Notification();
-        notification.taskId = taskId;
-        notification.title = title;
-        notification.body = body;
-        notification.userId = userId;
-        notification.provider = provider;
-        notification.schedule = schedule;
-        notification.active = active;
-        await notification.save();
     }
     async updateNotification(model) {
         const { description, userId, id: taskId, notification: modelNotification } = model;
         if (!modelNotification) {
             return;
         }
-        const { provider, schedule, active } = modelNotification;
+        const { providers, schedule, active } = modelNotification;
         const title = 'Reminder: ';
         const body = description;
-        const existNotification = await this.notificationRepository.findOne({ where: { taskId } });
-        if (existNotification) {
-            existNotification.title = title;
-            existNotification.body = body;
-            existNotification.provider = provider;
-            existNotification.schedule = schedule;
-            existNotification.sentAt = null;
+        await this.notificationRepository.destroy({ where: { taskId } });
+        for (const provider of providers) {
+            const notification = new notification_entity_1.Notification();
+            notification.title = title;
+            notification.body = body;
+            notification.provider = provider;
+            notification.schedule = schedule;
             notification.active = active;
-            await existNotification.save();
-            return;
+            notification.userId = userId;
+            notification.taskId = taskId;
+            await notification.save();
         }
-        const notification = new notification_entity_1.Notification();
-        notification.taskId = taskId;
-        notification.title = title;
-        notification.body = body;
-        notification.userId = userId;
-        notification.provider = provider;
-        notification.schedule = schedule;
-        notification.active = active;
-        await notification.save();
     }
     async deleteNotification(model) {
         const { id: taskId } = model;
@@ -88,10 +80,16 @@ let NotificationService = class NotificationService {
         });
         for (const notification of notificationsThatShouldBeSent) {
             const userId = notification.userId;
-            const devices = await this.deviceRepository.findAll({ where: { userId } });
-            for (const device of devices) {
-                await this.sendNotification(device.fdcToken, notification.title, notification.body);
+            if (notification.provider === 'firebase') {
+                const devices = await this.deviceRepository.findAll({ where: { userId } });
+                for (const device of devices) {
+                    await this.sendNotification(notification, device.fdcToken);
+                }
+                notification.sentAt = this.getActualDate();
+                notification.save();
+                continue;
             }
+            await this.sendNotification(notification, '');
             notification.sentAt = this.getActualDate();
             notification.save();
         }
@@ -183,8 +181,10 @@ let NotificationService = class NotificationService {
                 throw new Error('Invalid day of week');
         }
     }
-    async sendNotification(token, title, body) {
-        await this.notificationProvider.sendNotification(token, title, body);
+    async sendNotification(notification, token) {
+        const { provider, title, body } = notification;
+        const notificationProvider = this.notificationProviderFactory.create(provider);
+        await notificationProvider.sendNotification(token, title, body);
     }
 };
 __decorate([
@@ -213,11 +213,11 @@ __decorate([
 ], NotificationService.prototype, "sendNotificationToUsers", null);
 NotificationService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('NOTIFICATION_PROVIDER')),
+    __param(0, (0, common_1.Inject)('NOTIFICATION_PROVIDER_FACTORY')),
     __param(1, (0, common_1.Inject)('NOTIFICATION_REPOSITORY')),
     __param(2, (0, common_1.Inject)('DEVICE_REPOSITORY')),
     __param(3, (0, common_1.Inject)('SCHEDULE_PARSER')),
-    __metadata("design:paramtypes", [Object, Object, Object, scheduleParser_provider_1.ScheduleParser])
+    __metadata("design:paramtypes", [NotificationsProviders_factory_1.NotificationProviderFactory, Object, Object, scheduleParser_provider_1.ScheduleParser])
 ], NotificationService);
 exports.NotificationService = NotificationService;
 //# sourceMappingURL=notification.service.js.map

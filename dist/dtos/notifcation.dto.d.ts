@@ -1,5 +1,5 @@
 export declare class NotificationDto {
     active?: boolean;
-    provider: string;
+    providers: string[];
     schedule: string;
 }

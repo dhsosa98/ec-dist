@@ -19,10 +19,9 @@ __decorate([
     __metadata("design:type", Boolean)
 ], NotificationDto.prototype, "active", void 0);
 __decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['firebase', 'slack']),
-    __metadata("design:type", String)
-], NotificationDto.prototype, "provider", void 0);
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], NotificationDto.prototype, "providers", void 0);
 __decorate([
     (0, class_validator_1.Validate)(Schedule_1.ScheduleValidator),
     __metadata("design:type", String)

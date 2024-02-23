@@ -56,17 +56,22 @@ let TodoItemService = class TodoItemService {
         return Promise.all(promises);
     }
     async findOne(userId, id) {
+        var _a, _b;
         const result = await this.todoItemRepository.findOne({
             where: { [sequelize_1.Op.and]: [{ id }, { userId }] },
         });
         if (!result) {
             throw new common_1.NotFoundException(`TodoItem with id ${id} not found`);
         }
-        const dbNotification = await this.notificationRepository.findOne({
+        const dbNotification = await this.notificationRepository.findAll({
             where: { taskId: id },
             attributes: ['active', 'provider', 'schedule'],
         });
-        result.notification = dbNotification;
+        result.notification = {
+            active: ((_a = dbNotification[0]) === null || _a === void 0 ? void 0 : _a.active) || false,
+            providers: dbNotification.map((notification) => notification.provider),
+            schedule: ((_b = dbNotification[0]) === null || _b === void 0 ? void 0 : _b.schedule) || '',
+        };
         return result;
     }
     async create(userId, todoItem) {

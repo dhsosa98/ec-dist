@@ -1,1 +1,1 @@
-{"version":3,"file":"notification.provider.js","sourceRoot":"","sources":["../../src/providers/notification.provider.ts"],"names":[],"mappings":";;;AAAA,yEAAgE;AAEnD,QAAA,oBAAoB,GAAG;IAClC;QACE,OAAO,EAAE,yBAAyB;QAClC,QAAQ,EAAE,kCAAY;KACvB;CACF,CAAC"}
+{"version":3,"file":"notification.provider.js","sourceRoot":"","sources":["../../src/providers/notification.provider.ts"],"names":[],"mappings":";;;AAAA,yEAAgE;AAEnD,QAAA,oBAAoB,GAAG;IAClC;QACE,OAAO,EAAE,yBAAyB;QAClC,UAAU,EAAE,GAAG,EAAE;YACf,OAAO,kCAAY,CAAC;QACtB,CAAC;KACF;CACF,CAAC"}

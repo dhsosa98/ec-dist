@@ -5,7 +5,9 @@ const notification_entity_1 = require("../entities/notification.entity");
 exports.NotificationProvider = [
     {
         provide: 'NOTIFICATION_REPOSITORY',
-        useValue: notification_entity_1.Notification,
+        useFactory: () => {
+            return notification_entity_1.Notification;
+        },
     },
 ];
 //# sourceMappingURL=notification.provider.js.map
