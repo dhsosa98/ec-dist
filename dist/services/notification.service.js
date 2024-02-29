@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationService = void 0;
 const common_1 = require("@nestjs/common");
 const event_emitter_1 = require("@nestjs/event-emitter");
-const schedule_1 = require("@nestjs/schedule");
 const notification_entity_1 = require("../entities/notification.entity");
 const todoItem_entity_1 = require("../entities/todoItem.entity");
 const NotificationsProviders_factory_1 = require("../providers/NotificationsProviders.factory");
@@ -205,12 +204,6 @@ __decorate([
     __metadata("design:paramtypes", [todoItem_entity_1.TodoItem]),
     __metadata("design:returntype", Promise)
 ], NotificationService.prototype, "deleteNotification", null);
-__decorate([
-    (0, schedule_1.Cron)('*/15 * * * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], NotificationService.prototype, "sendNotificationToUsers", null);
 NotificationService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('NOTIFICATION_PROVIDER_FACTORY')),
